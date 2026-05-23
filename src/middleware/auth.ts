@@ -24,9 +24,12 @@ const auth = (...roles: UserRole[]) => {
       ) as JwtPayload;
 
       const userData = await pool.query(
-        `SELECT * FROM users where email = $1`,
-        [decoded.email],
+        `SELECT * FROM users where id = $1`,
+        [decoded.id],
       );
+
+      console.log(userData.rows);
+      console.log(decoded);
 
       if (userData.rows.length === 0) {
         return sendResponse(res, {
