@@ -1,4 +1,6 @@
 import { pool } from "../../db/init";
+import type { GetIssuesQuery } from "../../enums-types/types";
+import type { User } from "../user/user.interface";
 import type { IIssuePayload } from "./issues.interface";
 
 const createIssuesHandler = async (id: number, issuePayload: IIssuePayload) => {
@@ -12,6 +14,68 @@ const createIssuesHandler = async (id: number, issuePayload: IIssuePayload) => {
   return createdIssue.rows[0];
 };
 
+const getAllIssuesHandler = async (query: GetIssuesQuery) => {
+  const { sort = "newest", type, status } = query;
+
+  const sortOptions = {
+    newest: "created_at DESC",
+    oldest: "created_at ASC",
+  };
+
+  type SortKey = keyof typeof sortOptions;
+
+  const orderBy = sortOptions[sort as SortKey] || sortOptions.newest;
+
+  const issuesResult = await pool.query(
+    `SELECT * FROM issues ORDER BY ${orderBy}`,
+  );
+
+  const issues = issuesResult.rows;
+
+  if (issues.length === 0) return [];
+
+  const reporterIds = [
+    ...new Set(issues.map((issue) => issue.reporter_id).filter(Boolean)),
+  ];
+
+  const usersResult = await pool.query(
+    `SELECT id, name, role FROM users WHERE id = ANY($1)`,
+    [reporterIds],
+  );
+
+  const userMap = usersResult.rows.reduce(
+    (acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    },
+    {} as Record<number, User>,
+  );
+
+  let result = issues.map((issue) => {
+    return {
+      id: issue.id,
+      title: issue.title,
+      description: issue.description,
+      type: issue.type,
+      status: issue.status,
+      reporter: userMap[issue.reporter_id] || null,
+      created_at: issue.created_at,
+      updated_at: issue.updated_at,
+    };
+  });
+
+  if (type) {
+    result = result.filter((r1) => r1.type === type);
+  }
+
+  if (status) {
+    result = result.filter((r1) => r1.status === status);
+  }
+
+  return result;
+};
+
 export const issuesService = {
   createIssuesHandler,
+  getAllIssuesHandler,
 };

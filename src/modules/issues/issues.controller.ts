@@ -3,6 +3,7 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import properties from "../../config/properties";
 import { issuesService } from "./issues.service";
 import sendResponse from "../../utility/sendResponse";
+import { globalException } from "../../globals/globalException";
 
 const createIssues = async (req: Request, res: Response) => {
   try {
@@ -25,4 +26,18 @@ const createIssues = async (req: Request, res: Response) => {
     throw new Error(err?.message);
   }
 };
-export const issuesController = { createIssues };
+
+const getAllIssues = async (req: Request, res: Response) => {
+  try {
+    const result = await issuesService.getAllIssuesHandler(req.query);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    throw new globalException(500, err?.message);
+  }
+};
+
+export const issuesController = { createIssues, getAllIssues };

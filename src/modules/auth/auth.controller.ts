@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { authService } from "./auth.service";
 import sendResponse from "../../utility/sendResponse";
+import { globalException } from "../../globals/globalException";
 
 const registerController = async (req: Request, res: Response) => {
   try {
@@ -12,7 +13,7 @@ const registerController = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err: any) {
-    throw new Error(err?.message);
+    throw new globalException(500, err?.message);
   }
 };
 
@@ -44,7 +45,7 @@ const loginController = async (req: Request, res: Response) => {
       },
     });
   } catch (err: any) {
-    throw new Error(err?.message);
+    throw new globalException(500, err?.message);
   }
 };
 
