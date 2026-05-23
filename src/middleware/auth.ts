@@ -3,8 +3,8 @@ import type { UserRole } from "../enums-types/enums";
 import sendResponse from "../utility/sendResponse";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import properties from "../config/properties";
-import { pool } from "../db/init";
 import type { User } from "../modules/user/user.interface";
+import { pool } from "../db/init";
 
 const auth = (...roles: UserRole[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {

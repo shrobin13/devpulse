@@ -9,6 +9,9 @@
     // See also https://aka.ms/tsconfig/module
     "module": "esnext",
     "target": "esnext",
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0",
+    "typeRoots": ["./node_modules/@types", "./src/globals"],
     "types": ["node"],
     // For nodejs:
     // "lib": ["esnext"],
@@ -40,5 +43,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": []
 }
