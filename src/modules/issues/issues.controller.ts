@@ -40,4 +40,18 @@ const getAllIssues = async (req: Request, res: Response) => {
   }
 };
 
-export const issuesController = { createIssues, getAllIssues };
+const getIssueById = async (req: Request, res: Response) => {
+  try {
+    const result = await issuesService.getIssueByIdHandler(req.params);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    throw new globalException(500, err?.message);
+  }
+};
+
+export const issuesController = { createIssues, getAllIssues, getIssueById };

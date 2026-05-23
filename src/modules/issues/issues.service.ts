@@ -75,7 +75,40 @@ const getAllIssuesHandler = async (query: GetIssuesQuery) => {
   return result;
 };
 
+const getIssueByIdHandler = async (query: any) => {
+  const { id } = query;
+  const issueData = await pool.query(`SELECT * FROM issues WHERE id = $1`, [
+    Number(id),
+  ]);
+
+  if (issueData.rows.length === 0) {
+    throw new Error(`No issue found with id: ${id} `);
+  }
+
+  const issue: IIssues = issueData.rows[0];
+  const userData = await pool.query(`SELECT * FROM users WHERE id = $1`, [
+    issue.reporter_id,
+  ]);
+
+  const user: User = userData.rows[0];
+
+  return {
+    id: issue.id,
+    title: issue.title,
+    description: issue.description,
+    type: issue.type,
+    status: issue.status,
+    reporter: {
+      id: user.id,
+      name: user.name,
+      role: user.role,
+    },
+    created_at: issue.created_at,
+    updated_at: issue.updated_at,
+  };
+};
 export const issuesService = {
   createIssuesHandler,
   getAllIssuesHandler,
+  getIssueByIdHandler,
 };
