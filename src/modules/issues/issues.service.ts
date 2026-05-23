@@ -128,9 +128,15 @@ const updateIssueHandler = async (query: any, updatePayload: IIssuePayload) => {
   return result.rows[0];
 };
 
+const deleteIssueHandler = async (id: number) => {
+  const result = await pool.query(`DELETE FROM issues where id = $1`, [id]);
+  return result.rows[0];
+};
+
 export const issuesService = {
   createIssuesHandler,
   getAllIssuesHandler,
   getIssueByIdHandler,
   updateIssueHandler,
+  deleteIssueHandler,
 };
