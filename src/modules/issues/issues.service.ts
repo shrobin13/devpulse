@@ -1,7 +1,7 @@
 import { pool } from "../../db/init";
 import type { GetIssuesQuery } from "../../enums-types/types";
 import type { User } from "../user/user.interface";
-import type { IIssuePayload } from "./issues.interface";
+import type { IIssuePayload, IIssues } from "./issues.interface";
 
 const createIssuesHandler = async (id: number, issuePayload: IIssuePayload) => {
   const { title, description, type } = issuePayload;
@@ -107,8 +107,30 @@ const getIssueByIdHandler = async (query: any) => {
     updated_at: issue.updated_at,
   };
 };
+
+const updateIssueHandler = async (query: any, updatePayload: IIssuePayload) => {
+  const { title, description, type, status } = updatePayload;
+  const { id } = query;
+
+  const result = await pool.query(
+    `UPDATE issues
+      SET title = COALESCE($1, title),
+      description = COALESCE($2, description),
+      type = COALESCE($3, type),
+      status = COALESCE($4, status),
+      updated_at = NOW()
+      WHERE id = $5
+      RETURNING *
+    `,
+    [title, description, type, status, id],
+  );
+
+  return result.rows[0];
+};
+
 export const issuesService = {
   createIssuesHandler,
   getAllIssuesHandler,
   getIssueByIdHandler,
+  updateIssueHandler,
 };
