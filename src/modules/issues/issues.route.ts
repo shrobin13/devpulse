@@ -16,7 +16,7 @@ router.get("/", issuesController.getAllIssues);
 
 router.get("/:id", issuesController.getIssueById);
 
-router.patch("/:id", updatePermission, issuesController.updateIssueById);
+router.patch("/:id", updatePermission(), issuesController.updateIssueById);
 
 router.delete(
   "/:id",

@@ -84,7 +84,7 @@ const deleteIssueById = async (req: Request, res: Response) => {
       message: "Issue deleted successfully",
     });
   } catch (error: any) {
-    throw new Error(error?.message);
+    throw new globalException(500, error?.message);
   }
 };
 
